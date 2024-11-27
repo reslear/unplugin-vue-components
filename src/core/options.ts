@@ -4,7 +4,7 @@ import { getPackageInfoSync, isPackageExists } from 'local-pkg'
 import type { ComponentResolver, ComponentResolverObject, Options, ResolvedOptions } from '../types'
 import { detectTypeImports } from './type-imports/detect'
 
-export const defaultOptions: Omit<Required<Options>, 'include' | 'exclude' | 'transformer' | 'globs' | 'directives' | 'types' | 'version'> = {
+export const defaultOptions: Omit<Required<Options>, 'include' | 'exclude' | 'excludeNames' | 'transformer' | 'globs' | 'directives' | 'types' | 'version'> = {
   dirs: 'src/components',
   extensions: 'vue',
   deep: true,
@@ -84,7 +84,8 @@ export function resolveOptions(options: Options, root: string): ResolvedOptions 
 }
 
 function getVueVersion(root: string): 2 | 2.7 | 3 {
-  const raw = getPackageInfoSync('vue', { paths: [root] })?.version || '3'
+  // To fixed [mlly] issue: https://github.com/unjs/mlly/issues/158
+  const raw = getPackageInfoSync('vue', { paths: [join(root, '/')] })?.version || '3'
   const version = +(raw.split('.').slice(0, 2).join('.'))
   if (version === 2.7)
     return 2.7

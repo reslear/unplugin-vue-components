@@ -72,6 +72,11 @@ export interface Options {
   exclude?: FilterPattern
 
   /**
+   * RegExp or string to match component names that will NOT be imported
+   */
+  excludeNames?: FilterPattern
+
+  /**
    * Relative paths to the directory to search for components.
    * @default 'src/components'
    */
@@ -86,7 +91,7 @@ export interface Options {
   /**
    * Glob patterns to match file names to be detected as components.
    *
-   * When specified, the `dirs` and `extensions` options will be ignored.
+   * When specified, the `dirs`, `extensions`, and `directoryAsNamespace` options will be ignored.
    */
   globs?: string | string[]
 
@@ -179,7 +184,7 @@ export interface Options {
 }
 
 export type ResolvedOptions = Omit<
-Required<Options>,
+  Required<Options>,
 'resolvers' | 'extensions' | 'dirs' | 'globalComponentsDeclaration'
 > & {
   resolvers: ComponentResolverObject[]

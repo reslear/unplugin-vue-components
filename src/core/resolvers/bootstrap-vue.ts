@@ -16,9 +16,9 @@ const COMPONENT_ALIASES: Record<string, string> = {
   BBtnGroup: 'BButtonGroup',
   BBtnToolbar: 'BButtonToolbar',
   BCheck: 'BFormCheckbox',
-  BCheckGroup: 'BFormCheckboxGroup',
   BCheckbox: 'BFormCheckbox',
   BCheckboxGroup: 'BFormCheckboxGroup',
+  BCheckGroup: 'BFormCheckboxGroup',
   BDatalist: 'BFormDatalist',
   BDatepicker: 'BFormDatepicker',
   BDd: 'BDropdown',
@@ -90,6 +90,8 @@ export function BootstrapVueResolver(_options: BootstrapVueResolverOptions = {})
  * Resolver for BootstrapVueNext
  *
  * @link https://github.com/bootstrap-vue/bootstrap-vue-next
+ *
+ * @deprecated use `import { BootstrapVueNextResolver } from 'bootstrap-vue-next'` instead
  */
 export function BootstrapVueNextResolver(_options: BootstrapVueResolverOptions = {}): Array<ComponentResolver> {
   const options = { directives: true, ..._options }

@@ -1,12 +1,12 @@
 import { parse } from 'node:path'
 import process from 'node:process'
 import { minimatch } from 'minimatch'
-import resolve from 'resolve'
 import { slash, toArray } from '@antfu/utils'
 import {
   getPackageInfo,
   isPackageExists,
 } from 'local-pkg'
+import type { FilterPattern } from '@rollup/pluginutils'
 import type { ComponentInfo, ImportInfo, ImportInfoLegacy, Options, ResolvedOptions } from '../types'
 import type { Context } from './context'
 import { DISABLE_COMMENT } from './constants'
@@ -59,8 +59,10 @@ export function isEmpty(value: any) {
 
 export function matchGlobs(filepath: string, globs: string[]) {
   for (const glob of globs) {
-    if (minimatch(slash(filepath), glob))
-      return true
+    const isNegated = glob.startsWith('!')
+    const match = minimatch(slash(filepath), isNegated ? glob.slice(1) : glob)
+    if (match)
+      return !isNegated
   }
   return false
 }
@@ -144,7 +146,7 @@ export function getNameFromFilePath(filePath: string, options: ResolvedOptions):
     if (globalNamespaces.some((name: string) => folders.includes(name)))
       folders = folders.filter(f => !globalNamespaces.includes(f))
 
-    folders = folders.map(f => f.replace(/[^a-zA-Z0-9\-]/g, ''))
+    folders = folders.map(f => f.replace(/[^a-z0-9\-]/gi, ''))
 
     if (filename.toLowerCase() === 'index')
       filename = ''
@@ -222,8 +224,21 @@ export function shouldTransform(code: string) {
   return true
 }
 
-export function resolveImportPath(importName: string): string | undefined {
-  return resolve.sync(importName, {
-    preserveSymlinks: false,
-  })
+export function isExclude(name: string, exclude?: FilterPattern): boolean {
+  if (!exclude)
+    return false
+
+  if (typeof exclude === 'string')
+    return name === exclude
+
+  if (exclude instanceof RegExp)
+    return !!name.match(exclude)
+
+  if (Array.isArray(exclude)) {
+    for (const item of exclude) {
+      if (name === item || name.match(item))
+        return true
+    }
+  }
+  return false
 }
